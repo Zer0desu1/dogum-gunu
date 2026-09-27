@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffd6e3">
+<title>💌 Sana özel</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff6f9c;
+    --pink-soft: #ffd6e3;
+    --pink-deep: #e84a7f;
+    --cream: #fff8f2;
+    --lav: #e9dcff;
+    --ink: #5a2a3f;
+    --ink-soft: #8a5a6f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Quicksand", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, #ffe4ee 0%, #fff3f7 45%, #efe4ff 100%) fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .script { font-family: "Dancing Script", cursive; font-weight: 700; }
+  button { font: inherit; cursor: pointer; }
+
+  /* floating background hearts */
+  #bg-hearts { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  #bg-hearts span {
+    position: absolute; bottom: -40px; opacity: .55;
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp {
+    to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+
+  /* ---------- lock screen ---------- */
+  #lock {
+    position: fixed; inset: 0; z-index: 10;
+    display: grid; place-items: center; padding: 16px;
+    transition: opacity .8s, transform .8s;
+  }
+  #lock.gone { opacity: 0; transform: scale(1.08); pointer-events: none; }
+  .lock-card {
+    width: min(380px, 100%);
+    background: rgba(255,255,255,.75);
+    backdrop-filter: blur(10px);
+    border-radius: 28px; padding: 36px 26px 28px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(232,74,127,.18), 0 0 0 1px rgba(255,111,156,.12);
+  }
+  .lock-emoji { font-size: 64px; animation: bob 2.4s ease-in-out infinite; display: inline-block; }
+  @keyframes bob { 50% { transform: translateY(-8px) rotate(-6deg); } }
+  .lock-card h1 { font-family: "Dancing Script", cursive; font-size: 34px; margin: 8px 0 6px; color: var(--pink-deep); line-height: 1.1; }
+  .lock-card p { margin: 0 0 18px; color: var(--ink-soft); }
+  #lockForm { display: flex; gap: 8px; }
+  #pw {
+    flex: 1; min-width: 0;
+    font: inherit; font-size: 22px; letter-spacing: 6px; text-align: center;
+    padding: 12px 14px; border-radius: 16px;
+    border: 2px solid var(--pink-soft); background: #fff; color: var(--ink);
+    outline: none; transition: border-color .2s, box-shadow .2s;
+  }
+  #pw:focus { border-color: var(--pink); box-shadow: 0 0 0 4px rgba(255,111,156,.15); }
+  .btn {
+    border: 0; border-radius: 16px; padding: 12px 20px;
+    background: linear-gradient(135deg, #ff8fb1, var(--pink-deep));
+    color: #fff; font-weight: 700; font-size: 16px;
+    box-shadow: 0 8px 20px rgba(232,74,127,.3);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:active { transform: scale(.95); }
+  .btn:disabled { opacity: .7; }
+  .btn.ghost { background: #fff; color: var(--pink-deep); box-shadow: 0 4px 14px rgba(232,74,127,.15); }
+  .hint { font-size: 14px; margin-top: 16px !important; margin-bottom: 0 !important; }
+  #err { min-height: 22px; margin: 10px 0 0 !important; color: var(--pink-deep) !important; font-weight: 600; }
+  .shake { animation: shake .45s; }
+  @keyframes shake {
+    20%, 60% { transform: translateX(-9px); }
+    40%, 80% { transform: translateX(9px); }
+  }
+
+  /* ---------- app ---------- */
+  #app { position: relative; z-index: 1; }
+  section {
+    min-height: 100vh; padding: 64px 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  h2.script { font-size: clamp(38px, 9vw, 58px); margin: 0 0 8px; color: var(--pink-deep); line-height: 1.1; }
+  .sub { color: var(--ink-soft); margin: 0 0 32px; line-height: 1.6; font-size: 17px; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s, transform 1s; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  .hero h1 {
+    font-size: clamp(56px, 15vw, 110px); margin: 0; line-height: 1.05;
+    background: linear-gradient(135deg, #ff6f9c, #c56cf0);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: pop 1s cubic-bezier(.2,1.6,.4,1) both;
+  }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } }
+  .typer { font-size: 19px; min-height: 2.8em; max-width: 420px; margin: 22px 0 0; line-height: 1.5; }
+  .typer::after { content: "|"; animation: blink 1s steps(1) infinite; color: var(--pink); }
+  @keyframes blink { 50% { opacity: 0; } }
+  .balloons { font-size: 44px; margin-bottom: 10px; }
+  .balloons span { display: inline-block; animation: bob 3s ease-in-out infinite; }
+  .balloons span:nth-child(2) { animation-delay: -1s; font-size: 54px; filter: hue-rotate(260deg); }
+  .balloons span:nth-child(3) { animation-delay: -2s; filter: hue-rotate(180deg); }
+  .scroll-hint { position: absolute; bottom: 24px; font-size: 14px; color: var(--ink-soft); animation: bob 2s ease-in-out infinite; }
+  .hero { position: relative; }
+
+  /* cake */
+  .cake { position: relative; width: 260px; padding-top: 74px; margin-bottom: 28px; }
+  .candles { position: absolute; top: 0; left: 0; right: 0; height: 74px; display: flex; justify-content: center; align-items: flex-end; gap: 20px; }
+  .candle {
+    position: relative; width: 13px; height: 46px; border-radius: 4px; cursor: pointer;
+    background: repeating-linear-gradient(-45deg, #fff 0 6px, #ff9ebb 6px 12px);
+    box-shadow: inset -2px 0 0 rgba(0,0,0,.06);
+  }
+  .candle::before { content: ""; position: absolute; left: 50%; top: -6px; width: 2px; height: 7px; margin-left: -1px; background: #6b4a3a; }
+  .flame {
+    position: absolute; left: 50%; bottom: calc(100% + 4px);
+    width: 16px; height: 26px; margin-left: -8px;
+    background: radial-gradient(ellipse at 50% 75%, #fff 0 18%, #ffe066 35%, #ff9f43 70%, transparent 72%);
+    border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%;
+    transform-origin: 50% 100%;
+    animation: flicker .12s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 10px rgba(255,190,70,.9));
+    transition: opacity .3s, transform .3s;
+  }
+  @keyframes flicker { to { transform: scaleY(1.08) skewX(3deg); } }
+  .candle.out .flame { opacity: 0; transform: scale(0); animation: none; }
+  .candle.out::after {
+    content: ""; position: absolute; left: 50%; bottom: calc(100% + 6px); width: 8px; height: 8px; margin-left: -4px;
+    border-radius: 50%; background: rgba(160,160,160,.6);
+    animation: smoke 1.2s ease-out forwards;
+  }
+  @keyframes smoke { to { transform: translateY(-50px) scale(3); opacity: 0; } }
+  .tier { margin: 0 auto; position: relative; }
+  .tier.top {
+    width: 190px; height: 64px; border-radius: 16px 16px 6px 6px;
+    background: linear-gradient(#fff5f8, #ffe0ea);
+  }
+  .tier.top::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -12px; height: 18px;
+    background: radial-gradient(circle at 12px 0, #ffe0ea 11px, transparent 12px) 0 0 / 24px 18px repeat-x;
+    z-index: 1;
+  }
+  .cherries { padding-top: 16px; font-size: 20px; letter-spacing: 6px; }
+  .tier.bottom {
+    width: 260px; height: 86px; border-radius: 16px;
+    background: linear-gradient(#ffb3c9, #ff8fb1);
+    box-shadow: inset 0 -10px 0 rgba(0,0,0,.05);
+  }
+  .tier.bottom::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 42px; height: 8px;
+    background: radial-gradient(circle, #fff 3px, transparent 4px) 0 0 / 20px 8px repeat-x;
+  }
+  .plate { width: 300px; height: 20px; margin: -6px -20px 0; background: #fff; border-radius: 50%; box-shadow: 0 10px 24px rgba(232,74,127,.18); }
+  .wish { font-size: 22px; font-weight: 700; color: var(--pink-deep); margin-top: 22px; line-height: 1.5; animation: pop .8s cubic-bezier(.2,1.6,.4,1) both; }
+  .wish small { font-size: 15px; color: var(--ink-soft); font-weight: 600; }
+
+  /* reasons */
+  .reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: min(640px, 100%); }
+  @media (min-width: 640px) { .reasons { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .card { perspective: 800px; aspect-ratio: 1; cursor: pointer; }
+  .card .inner { position: relative; width: 100%; height: 100%; transition: transform .7s cubic-bezier(.3,1.3,.5,1); transform-style: preserve-3d; }
+  .card.flipped .inner { transform: rotateY(180deg); }
+  .front, .back {
+    position: absolute; inset: 0; border-radius: 20px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px;
+    box-shadow: 0 8px 22px rgba(232,74,127,.15);
+  }
+  .front { background: linear-gradient(135deg, #fff, var(--pink-soft)); font-size: 40px; }
+  .front span { font-size: 15px; font-weight: 700; color: var(--pink-deep); margin-top: 6px; }
+  .back { background: linear-gradient(135deg, #ff8fb1, #c56cf0); color: #fff; transform: rotateY(180deg); font-weight: 600; font-size: 15px; line-height: 1.45; }
+
+  /* envelope */
+  .envelope { position: relative; width: 260px; height: 170px; cursor: pointer; animation: bob 3s ease-in-out infinite; }
+  .pocket { position: absolute; inset: 0; background: linear-gradient(135deg, #ffc2d4, #ff9ebb); border-radius: 10px; box-shadow: 0 14px 34px rgba(232,74,127,.25); }
+  .pocket::before {
+    content: ""; position: absolute; inset: 0; border-radius: 10px;
+    background: linear-gradient(to top right, transparent 49.5%, #ffb0c7 50%) left / 50% 100% no-repeat,
+                linear-gradient(to top left, transparent 49.5%, #ffb0c7 50%) right / 50% 100% no-repeat;
+    opacity: .6;
+  }
+  .flap {
+    position: absolute; left: 0; right: 0; top: 0; height: 100px; z-index: 2;
+    background: #ff8fb1; clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top; transition: transform .6s;
+  }
+  .envelope.open .flap { transform: rotateX(180deg); z-index: 0; }
+  .seal { position: absolute; left: 50%; top: 78px; transform: translate(-50%, -50%); font-size: 34px; z-index: 3; transition: opacity .3s; }
+  .envelope.open .seal { opacity: 0; }
+  .envelope.open { animation: none; }
+  .letter {
+    width: min(520px, 100%); margin-top: -40px; position: relative; z-index: 4;
+    background: var(--cream); border-radius: 18px; padding: 28px 24px;
+    text-align: left; line-height: 1.75; font-size: 17px;
+    box-shadow: 0 20px 50px rgba(232,74,127,.2);
+    background-image: repeating-linear-gradient(transparent 0 29px, rgba(255,111,156,.12) 29px 30px);
+    animation: letterUp .9s cubic-bezier(.2,1.2,.4,1) both;
+  }
+  @keyframes letterUp { from { transform: translateY(60px) scale(.9); opacity: 0; } }
+  .letter p { margin: 0 0 14px; }
+  .letter .big { font-size: 30px; color: var(--pink-deep); }
+  .letter .right { text-align: right; margin: 0; }
+
+  /* coupons */
+  .coupons { display: grid; gap: 14px; width: min(520px, 100%); }
+  .coupon {
+    display: flex; align-items: center; gap: 14px; text-align: left;
+    background: #fff; border-radius: 18px; padding: 14px 14px 14px 18px; position: relative;
+    border: 2px dashed #ffb3c9; box-shadow: 0 6px 18px rgba(232,74,127,.1);
+    transition: transform .2s;
+  }
+  .c-emoji { font-size: 32px; }
+  .coupon > div:nth-child(2) { flex: 1; min-width: 0; }
+  .coupon b { display: block; font-size: 17px; }
+  .coupon small { color: var(--ink-soft); font-weight: 600; }
+  .coupon button {
+    border: 0; border-radius: 12px; padding: 9px 14px; font-weight: 700;
+    background: var(--pink-soft); color: var(--pink-deep); flex-shrink: 0;
+  }
+  .coupon.used { opacity: .7; }
+  .coupon.used button { background: #eee; color: #999; }
+  .coupon.used::after {
+    content: "Kullanıldı 💋"; position: absolute; right: 18px; top: 50%;
+    transform: translateY(-50%) rotate(-12deg);
+    border: 3px solid var(--pink-deep); color: var(--pink-deep); border-radius: 10px;
+    padding: 4px 10px; font-weight: 700; background: rgba(255,255,255,.9);
+    animation: stamp .35s cubic-bezier(.2,1.8,.4,1) both;
+  }
+  @keyframes stamp { from { transform: translateY(-50%) rotate(-12deg) scale(2.4); opacity: 0; } }
+
+  /* final */
+  .big-heart { font-size: 110px; animation: beat 1.1s ease-in-out infinite; cursor: pointer; user-select: none; }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1); } 45% { transform: scale(1.12); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div id="bg-hearts"></div>
+
+<section id="lock">
+  <div class="lock-card" id="lockCard">
+    <div class="lock-emoji">💌</div>
+    <h1>Bu site sadece<br>bir kişi için</h1>
+    <p>O kişi sensen, şifreyi biliyorsun 🤭</p>
+    <form id="lockForm" autocomplete="off">
+      <input id="pw" type="password" inputmode="numeric" placeholder="••••" aria-label="Şifre">
+      <button class="btn" id="openBtn">Aç 🔓</button>
+    </form>
+    <p class="hint">İpucu: senin özel günün 🎂 <br>(gün + ay, örn. 0503)</p>
+    <p id="err" role="alert"></p>
+  </div>
+</section>
+
+<main id="app" hidden></main>
+<canvas id="confetti"></canvas>
+
+<script id="payload" type="application/json">{"s":"cuI94Y5O1Gz4WOWh0JAo/A==","v":"9GGo2bfw+ulm6qLp","i":300000,"c":"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"}</script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  /* ---------- floating hearts ---------- */
+  const HEARTS = ["💖", "💗", "💕", "🌸", "✨", "💞"];
+  function spawnHeart() {
+    const s = document.createElement("span");
+    s.textContent = HEARTS[Math.random() * HEARTS.length | 0];
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.fontSize = 14 + Math.random() * 22 + "px";
+    s.style.animationDuration = 7 + Math.random() * 8 + "s";
+    $("#bg-hearts").appendChild(s);
+    s.addEventListener("animationend", () => s.remove());
+  }
+  setInterval(spawnHeart, 700);
+
+  /* ---------- confetti ---------- */
+  const cv = $("#confetti"), cx = cv.getContext("2d");
+  const COLORS = ["#ff6f9c", "#ffb3c9", "#c56cf0", "#ffe066", "#7fd8ff", "#ff9f43"];
+  let parts = [], running = false;
+  function resize() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+  addEventListener("resize", resize); resize();
+  function confetti(n = 160, x = innerWidth / 2, y = innerHeight / 3) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = 4 + Math.random() * 9;
+      parts.push({
+        x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 6,
+        r: 4 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .3,
+        c: COLORS[Math.random() * COLORS.length | 0], heart: Math.random() < .25, life: 0,
+      });
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+  function tick() {
+    const d = devicePixelRatio;
+    cx.clearRect(0, 0, cv.width, cv.height);
+    parts = parts.filter(p => p.y < innerHeight + 40 && p.life < 400);
+    for (const p of parts) {
+      p.life++; p.vy += .22; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      cx.save(); cx.translate(p.x * d, p.y * d); cx.rotate(p.rot); cx.fillStyle = p.c;
+      if (p.heart) { cx.font = `${p.r * 4 * d}px serif`; cx.fillText("💗", 0, 0); }
+      else cx.fillRect(-p.r * d, -p.r * .5 * d, p.r * 2 * d, p.r * d);
+      cx.restore();
+    }
+    if (parts.length) requestAnimationFrame(tick); else { running = false; cx.clearRect(0, 0, cv.width, cv.height); }
+  }
+
+  /* ---------- happy birthday melody ---------- */
+  function playSong() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    const ac = new AC();
+    const N = { G4: 392, A4: 440, B4: 494, C5: 523, D5: 587, E5: 659, F5: 698, G5: 784 };
+    const song = [
+      ["G4", .75], ["G4", .25], ["A4", 1], ["G4", 1], ["C5", 1], ["B4", 2],
+      ["G4", .75], ["G4", .25], ["A4", 1], ["G4", 1], ["D5", 1], ["C5", 2],
+      ["G4", .75], ["G4", .25], ["G5", 1], ["E5", 1], ["C5", 1], ["B4", 1], ["A4", 2],
+      ["F5", .75], ["F5", .25], ["E5", 1], ["C5", 1], ["D5", 1], ["C5", 2.5],
+    ];
+    const beat = .38;
+    let t = ac.currentTime + .1;
+    for (const [n, len] of song) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "triangle"; o.frequency.value = N[n];
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(.22, t + .02);
+      g.gain.exponentialRampToValueAtTime(.001, t + len * beat * .95);
+      o.connect(g).connect(ac.destination);
+      o.start(t); o.stop(t + len * beat);
+      t += len * beat;
+    }
+    setTimeout(() => ac.close(), (t - ac.currentTime + .5) * 1000);
+  }
+
+  /* ---------- the app, once unlocked ---------- */
+  function initApp() {
+    // scroll reveal
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: .15 });
+    $$(".reveal").forEach(el => io.observe(el));
+
+    // typewriter
+    const typer = $(".typer"), text = [...typer.dataset.text];
+    let i = 0;
+    setTimeout(function type() {
+      typer.textContent = text.slice(0, ++i).join("");
+      if (i < text.length) setTimeout(type, 55);
+    }, 900);
+
+    // candles
+    const candles = $$(".candle");
+    const lit = () => candles.filter(c => !c.classList.contains("out"));
+    function blowOut(c) {
+      if (!c || c.classList.contains("out")) return;
+      c.classList.add("out");
+      if (!lit().length) celebrate();
+    }
+    let celebrated = false;
+    function celebrate() {
+      if (celebrated) return;
+      celebrated = true;
+      $("#wish").hidden = false;
+      $("#micBtn").hidden = true;
+      const r = $("#cake").getBoundingClientRect();
+      confetti(220, r.left + r.width / 2, r.top + 40);
+      playSong();
+    }
+    candles.forEach(c => c.addEventListener("click", () => blowOut(c)));
+
+    $("#micBtn").addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        btn.textContent = "🌬️ Şimdi üfle!";
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        const an = ac.createAnalyser(); an.fftSize = 1024;
+        ac.createMediaStreamSource(stream).connect(an);
+        const buf = new Uint8Array(an.fftSize);
+        let loud = 0;
+        (function listen() {
+          an.getByteTimeDomainData(buf);
+          let sum = 0;
+          for (const v of buf) { const x = (v - 128) / 128; sum += x * x; }
+          const rms = Math.sqrt(sum / buf.length);
+          if (rms > .16) { if (++loud % 5 === 0) blowOut(lit()[Math.random() * lit().length | 0]); }
+          else loud = Math.max(0, loud - 1);
+          if (lit().length) requestAnimationFrame(listen);
+          else { stream.getTracks().forEach(t => t.stop()); ac.close(); }
+        })();
+      } catch {
+        btn.textContent = "Mikrofon açılamadı, mumlara dokun 🕯️";
+        btn.disabled = true;
+      }
+    });
+
+    // reason cards
+    $$(".card").forEach(c => c.addEventListener("click", () => c.classList.toggle("flipped")));
+
+    // envelope
+    $("#envelope").addEventListener("click", e => {
+      const env = e.currentTarget;
+      if (env.classList.contains("open")) return;
+      env.classList.add("open");
+      setTimeout(() => {
+        $("#letter").hidden = false;
+        const r = env.getBoundingClientRect();
+        confetti(60, r.left + r.width / 2, r.top + r.height / 2);
+      }, 500);
+    });
+
+    // coupons (remembered on her phone)
+    const used = new Set(JSON.parse(store.get("bd-coupons") || "[]"));
+    $$(".coupon").forEach(c => {
+      const id = c.dataset.id, btn = $("button", c);
+      const mark = () => { c.classList.add("used"); btn.disabled = true; };
+      if (used.has(id)) mark();
+      btn.addEventListener("click", () => {
+        if (!confirm("Bu kuponu şimdi kullanmak istiyor musun? 💕")) return;
+        used.add(id); store.set("bd-coupons", JSON.stringify([...used]));
+        mark();
+        const r = c.getBoundingClientRect();
+        confetti(50, r.right - 60, r.top + r.height / 2);
+      });
+    });
+
+    // final
+    $("#againBtn").addEventListener("click", () => { confetti(260); playSong(); });
+    $(".big-heart").addEventListener("click", e => confetti(40, e.clientX, e.clientY));
+
+    setTimeout(() => confetti(200), 400);
+  }
+
+  /* ---------- unlock (AES-GCM, key from PBKDF2) ---------- */
+  const P = JSON.parse($("#payload").textContent);
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function decrypt(pw) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: b64(P.s), iterations: P.i, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(P.v) }, key, b64(P.c));
+    return new TextDecoder().decode(pt);
+  }
+  // "05.03", "5/3", "0503" all become "0503"
+  function normalize(raw) {
+    const parts = raw.trim().split(/[^\d]+/).filter(Boolean);
+    if (parts.length >= 2) return parts[0].padStart(2, "0") + parts[1].padStart(2, "0");
+    return raw.replace(/\D/g, "").slice(0, 4);
+  }
+  async function tryUnlock(pw) {
+    try { return await decrypt(pw); } catch { return null; }
+  }
+  function open(html, pw) {
+    store.set("bd-pw", pw);
+    $("#lock").classList.add("gone");
+    setTimeout(() => $("#lock").remove(), 900);
+    const app = $("#app");
+    app.innerHTML = html;
+    app.hidden = false;
+    scrollTo(0, 0);
+    initApp();
+  }
+
+  const ERRORS = ["Olmadı 🙈 bir daha dene", "Hmm, o değil 🤔", "Yaklaştın gibi… ama değil 😅", "İpucuna bir bak 👀"];
+  let fails = 0;
+  $("#lockForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = $("#openBtn"), pw = normalize($("#pw").value);
+    if (!pw) return;
+    btn.disabled = true; btn.textContent = "…";
+    const html = await tryUnlock(pw);
+    btn.disabled = false; btn.textContent = "Aç 🔓";
+    if (html) return open(html, pw);
+    $("#err").textContent = ERRORS[fails++ % ERRORS.length];
+    const card = $("#lockCard");
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+    $("#pw").select();
+  });
+
+  // came back later on the same phone? open straight away
+  const saved = store.get("bd-pw");
+  if (saved) tryUnlock(saved).then(html => html && open(html, saved));
+})();
+</script>
+</body>
+</html>
